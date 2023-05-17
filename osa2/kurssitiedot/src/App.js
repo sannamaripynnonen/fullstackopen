@@ -16,11 +16,13 @@ const Header = ({ name }) => {
 }
 
 const Content = ({ parts }) => {
+  const total = parts.reduce((accumulator, currentValue) => accumulator + currentValue.exercises, 0);
   return (
     <div>
       {parts.map(part =>
         <Part key={part.id} part={part} />  
       )}
+      <p>total of {total} exercises</p>
     </div>
   )
 }
