@@ -5,3 +5,6 @@ osa1
   anekdootit
   kurssitiedot
   unicafe
+osa2
+  kurssitiedot
+  puhelinluettelo
