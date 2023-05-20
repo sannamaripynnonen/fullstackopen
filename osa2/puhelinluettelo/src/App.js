@@ -23,20 +23,22 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({ persons }) => {
+const Persons = ({ persons, deletePerson }) => {
   return (
       <div>
           {persons.map(person => 
-          <Person key={person.name} name={person.name} number={person.number} />  
+          <Person key={person.name} name={person.name} number={person.number} buttonClick={() => deletePerson(person.id)} />  
           )}
       </div>
   )
 }
 
-const Person = ({ name, number }) => {
+const Person = ({ name, number, buttonClick }) => {
   return (
       <div>
-      <p>{name} {number}</p>  
+      <p>{name} {number}
+      <button onClick={buttonClick}>delete</button>
+      </p>  
       </div>
   )
 }
@@ -72,7 +74,20 @@ const App = () => {
         else {
           alert(`${newName} is already added to phonebook`)
         }
+  }
+
+  const deletePerson = id => {
+    const person = persons.find(p => p.id === id);
+    console.log(`deleting ${person.name}`)
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .del(id)
+        .then(()=> {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+      console.log(`person ${id} deleted successfully`)
     }
+  }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -93,7 +108,7 @@ const App = () => {
                   handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={persons} deletePerson={deletePerson} />
     </div>
   )
 
