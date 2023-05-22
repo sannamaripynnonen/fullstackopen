@@ -47,6 +47,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [confirmMessage, setConfirmMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -56,6 +57,18 @@ const App = () => {
       })
   }, [])
     
+  const Notification = ({ message }) => {
+    if (message === null) {
+      return null
+    }
+
+    return (
+      <div className="confirmation">
+        {message}
+      </div>
+    )
+  }
+
   const addPerson = (event) => {
       event.preventDefault()
       if ((persons.find(person => person.name === newName)) === undefined) {
@@ -69,6 +82,10 @@ const App = () => {
             setPersons(persons.concat(returnedPersons))
             setNewName('')
             setNewNumber('')
+            setConfirmMessage(`Added ${personObject.name}`)
+            setTimeout(() => {
+              setConfirmMessage(null)
+            }, 3000)
           })
         }
         else {
@@ -80,6 +97,10 @@ const App = () => {
               .update(person.id, changedNumber)
               .then(returnedPersons => {
                 setPersons(persons.map(person => person.name !== changedNumber.name ? person : returnedPersons))
+                setConfirmMessage(`Changed ${person.name}'s phone number`)
+                setTimeout(() => {
+                  setConfirmMessage(null)
+                }, 3000)
               })
           }
         }
@@ -93,6 +114,10 @@ const App = () => {
         .del(id)
         .then(()=> {
           setPersons(persons.filter(person => person.id !== id))
+          setConfirmMessage(`Deleted ${person.name}`)
+          setTimeout(() => {
+            setConfirmMessage(null)
+          }, 3000)
         })
       console.log(`person ${id} deleted successfully`)
     }
@@ -109,6 +134,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={confirmMessage} />
       <PersonForm persons={persons}
                   submit={addPerson}
                   newName={newName}
