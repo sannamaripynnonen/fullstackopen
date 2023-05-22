@@ -47,7 +47,8 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [confirmMessage, setConfirmMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -60,10 +61,15 @@ const App = () => {
   const Notification = ({ message }) => {
     if (message === null) {
       return null
+    } else if (message === errorMessage) {
+      return (
+        <div className="error">
+          {message}
+        </div>
+      )
     }
-
     return (
-      <div className="confirmation">
+      <div className="success">
         {message}
       </div>
     )
@@ -82,9 +88,9 @@ const App = () => {
             setPersons(persons.concat(returnedPersons))
             setNewName('')
             setNewNumber('')
-            setConfirmMessage(`Added ${personObject.name}`)
+            setSuccessMessage(`Added ${personObject.name}`)
             setTimeout(() => {
-              setConfirmMessage(null)
+              setSuccessMessage(null)
             }, 3000)
           })
         }
@@ -97,11 +103,19 @@ const App = () => {
               .update(person.id, changedNumber)
               .then(returnedPersons => {
                 setPersons(persons.map(person => person.name !== changedNumber.name ? person : returnedPersons))
-                setConfirmMessage(`Changed ${person.name}'s phone number`)
+                setSuccessMessage(`Changed ${person.name}'s phone number`)
                 setTimeout(() => {
-                  setConfirmMessage(null)
+                  setSuccessMessage(null)
                 }, 3000)
               })
+              .catch(err => {
+                setErrorMessage(
+                  `Information of ${person.name} has already been removed from server`
+                  )
+                  setTimeout(() => {
+                    setErrorMessage(null)
+                  }, 3000)
+                })
           }
         }
   }
@@ -114,10 +128,18 @@ const App = () => {
         .del(id)
         .then(()=> {
           setPersons(persons.filter(person => person.id !== id))
-          setConfirmMessage(`Deleted ${person.name}`)
+          setSuccessMessage(`Deleted ${person.name}`)
           setTimeout(() => {
-            setConfirmMessage(null)
+            setSuccessMessage(null)
           }, 3000)
+        })
+        .catch(err => {
+          setErrorMessage(
+            `Information of ${person.name} has already been removed from server`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 3000)
         })
       console.log(`person ${id} deleted successfully`)
     }
@@ -134,7 +156,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={confirmMessage} />
+      <Notification message={successMessage} />
+      <Notification message={errorMessage} />
       <PersonForm persons={persons}
                   submit={addPerson}
                   newName={newName}
