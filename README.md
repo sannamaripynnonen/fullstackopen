@@ -7,4 +7,6 @@ osa1
   unicafe
 osa2
   kurssitiedot
-  puhelinluettelo  
+  puhelinluettelo
+osa4
+  blogilista
