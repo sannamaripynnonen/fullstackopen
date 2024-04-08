@@ -84,6 +84,22 @@ test.only('fail with status code 400 if new blog does not contain url', async() 
         .expect(400)
 })
 
+test.only('delete blog with status code 204', async () => {
+    const initialBlogs = (await api.get('/api/blogs')).body
+    const blogToDelete = initialBlogs[0]
+
+    await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+    
+        const blogsAtEnd = await (await api.get('/api/blogs')).body
+
+        assert.strictEqual(blogsAtEnd.length, initialBlogs.length - 1)
+
+        const titles = blogsAtEnd.map(b => b.title)
+        assert(!titles.includes(blogToDelete.title))
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
