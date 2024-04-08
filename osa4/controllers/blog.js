@@ -11,6 +11,13 @@ blogRouter.get('/', (request, response) => {
   
 blogRouter.post('/', (request, response) => {
     const body = request.body
+
+    if (!body.title) {
+      return response.status(400).json({error: 'Title is required'})
+    } else if (!body.url) {
+      return response.status(400).json({error: 'Url is required'})
+    }
+
     const blog = new Blog({
       title: body.title,
       author: body.author,
