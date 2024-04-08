@@ -23,6 +23,28 @@ test.only('blogs are identified by id', async () => {
     }
 })
 
+test.only('new blog is added', async () => {
+    const newBlog = {
+        title: 'New blog title',
+        author: 'New blog author',
+        url: 'https://example.com/',
+        likes: 2
+    }
+
+    const initialBlogs = (await api.get('/api/blogs')).body
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    assert.strictEqual(response.body.length, initialBlogs.length +1)
+})
+
+
 after(async () => {
     await mongoose.connection.close()
 })
